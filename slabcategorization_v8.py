@@ -292,12 +292,12 @@ class MainWindow(QMainWindow):
             for y in self.alldata:
                 neximg = None 
                 if (id(y["Results"]) == id(self.resultsyr1) and self.slab in y["Results"]): 
-                    nextimg = self.path1 + str(self.slab) + ".png"
+                    nextimg = self.path1 + str(self.slab) + ".jpg"
                     y["Path to Img"] = nextimg
                     y["Img"].setPixmap(QPixmap(nextimg).scaled(300, 500, 1, 0))
                 elif self.slab in y["Matching Dic"]:
                     self.index = max(self.index, len(y["Matching Dic"][self.slab]))
-                    nextimg = y["Path"] + str(int(y["Matching Dic"][self.slab][self.index_counter]["Slab ID"])) + ".png"
+                    nextimg = y["Path"] + str(int(y["Matching Dic"][self.slab][self.index_counter]["Slab ID"])) + ".jpg"
                     y["Path to Img"] = nextimg
                     y["Img"].setPixmap(QPixmap(nextimg).scaled(300, 500, 1, 0))
                 else: 
@@ -339,17 +339,17 @@ class MainWindow(QMainWindow):
         self.states = ["L1", "L2", "T1", "T2", "CC", "SS", "NC", "Error"]
 
         try:
-            self.path1 = self.application_path + "/" + self.yr1 + "/Slabs/"
+            self.path1 = self.application_path + "/" + self.yr1 + "/Slabs/output_range/"
             self.nxtimg1 = ""
-            self.path2 = self.application_path + "/" + self.yr2 + "/Slabs/"
+            self.path2 = self.application_path + "/" + self.yr2 + "/Slabs/output_range/"
             self.nxtimg2 = ""
-            self.path3 = self.application_path + "/" + self.yr3 + "/Slabs/"
+            self.path3 = self.application_path + "/" + self.yr3 + "/Slabs/output_range/"
             self.nxtimg3 = ""
-            self.path4 = self.application_path + "/" + self.yr4 + "/Slabs/"
+            self.path4 = self.application_path + "/" + self.yr4 + "/Slabs/output_range/"
             self.nxtimg4 = ""
-            self.path5 = self.application_path + "/" + self.yr5 + "/Slabs/"
+            self.path5 = self.application_path + "/" + self.yr5 + "/Slabs/output_range/"
             self.nxtimg5 = ""
-            self.path6 = self.application_path + "/" + self.yr6 + "/Slabs/"
+            self.path6 = self.application_path + "/" + self.yr6 + "/Slabs/output_range/"
             self.nxtimg6 = ""
         except:
             None

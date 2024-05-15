@@ -4,6 +4,7 @@ class MenuModel(QObject):
     directory_changed = pyqtSignal(str) 
     def __init__(self, slab_inventory):
         super().__init__()
+        
         self._directory = ''
         self._registration = ''
         self._slab_inventory = slab_inventory
@@ -55,6 +56,7 @@ class MenuModel(QObject):
         subdirs = [entry for entry in entries if os.path.isdir(
             os.path.join(self._directory, entry))]
         return subdirs
+
 
     @property
     def directory(self):

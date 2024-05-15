@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>945</width>
-    <height>808</height>
+    <width>953</width>
+    <height>826</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,8 +25,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>921</width>
-         <height>733</height>
+         <width>929</width>
+         <height>751</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -40,8 +40,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>897</width>
-             <height>609</height>
+             <width>905</width>
+             <height>627</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -105,7 +105,7 @@ border-style : inset;
              </size>
             </property>
             <property name="text">
-             <string>Slab </string>
+             <string>BY Slab ID</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -228,11 +228,32 @@ border-style : inset;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>945</width>
+     <width>953</width>
      <height>26</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_range">
+    <property name="title">
+     <string>Menu</string>
+    </property>
+    <addaction name="action_range"/>
+    <addaction name="action_intensity"/>
+   </widget>
+   <addaction name="menu_range"/>
   </widget>
+  <action name="action_range">
+   <property name="text">
+    <string>Use Range</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="action_intensity">
+   <property name="text">
+    <string>Use Intensity</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

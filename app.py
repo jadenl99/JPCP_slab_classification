@@ -27,6 +27,7 @@ class App(QApplication):
         self.menu.close()
         
         reg_data = self.menu_model.registrations[self.menu_model.registration]
+        dir = self.menu_model.directory
         self.slab_inventory.set_segment(reg_data['_id'])
         self.year_panels = {}
         self.year_controllers = {}
@@ -42,7 +43,7 @@ class App(QApplication):
             self.year_panels[year] = year_view
 
         self.tool_model = ToolModel(self.year_models, reg_data['base_year'],
-                                    self.slab_inventory)
+                                    self.slab_inventory, dir)
         self.tool_controller = ToolController(self.tool_model,
                                               self.year_controllers)  
         self.annotation_tool = AnnotationTool(self.tool_controller, 

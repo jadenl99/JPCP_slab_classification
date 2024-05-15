@@ -77,3 +77,19 @@ class SlabInventory():
                 {"$set": update_data}
                 )
             )
+        
+    
+    def fetch_slab(self, year, slab_index):
+        """Fetches a slab from the database based on the year and slab index
+
+        Args:
+            year (int): year of the slab to fetch
+            slab_index (int): slab index of the slab to fetch
+
+        Returns:
+            dict: slab data of the slab fetched
+        """
+        seg_yr_id = f"{self.seg_str}_{year}"
+        return self.slab_collection.find_one(
+            {"slab_index": slab_index, "seg_year_id": seg_yr_id}
+            )

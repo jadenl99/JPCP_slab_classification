@@ -39,6 +39,9 @@ class YearPanel(QWidget):
         self._year_panel_model.back_btn_enable_signal.back_btn_enable.connect(
             self.on_back_btn_enable
         )
+        self._year_panel_model.state_changed_signal.state_changed.connect(
+            self.on_state_menu_changed
+        )
 
 
         self.next_btn.clicked.connect(self._year_panel_controller.next_slab)
@@ -51,9 +54,6 @@ class YearPanel(QWidget):
         )
 
         
-
-
-    
     @pyqtSlot(str)
     def on_BY_slab_changed(self, slab_dir):
         if slab_dir == "":
@@ -77,7 +77,11 @@ class YearPanel(QWidget):
         self.back_btn.setEnabled(not lock)  
         self.next_btn.setEnabled(not lock)
 
+
         for btn in self.state_btn_group.buttons():
+            if lock:
+                btn.setChecked(False)
+                btn.setIcon(QIcon())
             btn.setEnabled(not lock)
     
 
@@ -124,6 +128,33 @@ class YearPanel(QWidget):
             if not checked:
                 btn.setIcon(QIcon())
             checked_btns[0].setIcon(QIcon())
+        
+
+    @pyqtSlot(tuple)
+    def on_state_menu_changed(self, state_tuple):
+        """Updates the state of the slab based on the state tuple provided
+
+        Args:
+            state_tuple (tuple[str, str, str]): tuple containing the primary
+            state, secondary state, and special state of the slab
+        """
+        primary_state, secondary_state, special_state = state_tuple
+        for btn in self.state_btn_group.buttons():
+            btn.setIcon(QIcon())
+            if primary_state and btn.text() == primary_state:
+                btn.setChecked(True)
+            elif secondary_state and btn.text() == secondary_state:
+                btn.setChecked(True)
+                btn.setIcon(self.style().standardIcon(
+                    QStyle.SP_DialogYesButton)
+                    )
+            else:
+                btn.setChecked(False)
+            
+        if special_state == 'R':
+            self.replaced_box.setChecked(True)
+        else:
+            self.replaced_box.setChecked(False)
         
         
 

@@ -11,7 +11,6 @@ class YearPanelController(QObject):
     def next_slab(self):
         """Updates the displayed slab image to the next slab in the slab ID list
         """
-        print("Next Slab")
         self._year_panel_model.next_slab()
     
 

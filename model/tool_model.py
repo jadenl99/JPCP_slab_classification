@@ -75,7 +75,7 @@ class ToolModel(QObject):
     def execute_updates(self):
         """Executes all the requests in the requests list stored in the 
         database object and clears all the requests after.
-        """
+        """ 
         self._slab_inventory.execute_requests()
 
 

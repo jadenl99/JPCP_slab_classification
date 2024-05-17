@@ -73,6 +73,10 @@ class YearPanelModel(QObject):
         return self._panel_updated
     
 
+    @property
+    def year(self):
+        return self._year
+    
     @panel_updated.setter
     def panel_updated(self, panel_updated):
         self._panel_updated = panel_updated

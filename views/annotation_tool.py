@@ -1,8 +1,10 @@
 import sys
 import os
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QHBoxLayout)
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QHBoxLayout, 
+                             QAbstractButton)
 from PyQt5.QtGui import QIntValidator
 from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.uic import loadUi
 
 class AnnotationTool(QMainWindow):
@@ -26,6 +28,9 @@ class AnnotationTool(QMainWindow):
         years_layout.setSpacing(0)
         sorted_year_panels = sorted(year_panels.items())
         for panel in sorted_year_panels:
+            panel[1].state_btn_group.buttonClicked.connect(
+                self.shift_click_state
+                )
             years_layout.addWidget(panel[1])
         self.scroll_year_contents.setLayout(years_layout)
         
@@ -77,6 +82,39 @@ class AnnotationTool(QMainWindow):
         """
         for year, year_panel in self._year_panels.items():
             year_panel.yr_label.setText(str(year))  
+
+    
+    @pyqtSlot(QAbstractButton)
+    def shift_click_state(self, button):
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers != QtCore.Qt.ShiftModifier:
+            return
+    
+        sorted_year_panels = sorted(self._year_panels.items())  
+        btn_id = None
+        pressed_yr = None
+        for year, year_panel in sorted_year_panels:
+            btn_id = year_panel.state_btn_group.id(button) 
+            if btn_id != -1:
+                pressed_yr = year
+                break
+        
+
+        pressed_yr_panel = self._year_panels[pressed_yr]
+        pressed_yr_panel.on_state_btn_toggled(button, shift_override=True)
+        pressed_state = button.isChecked()
+        for year, year_panel in sorted_year_panels:
+            if year > pressed_yr:
+                year_panel.state_btn_group.button(btn_id).setChecked(pressed_state)
+                print(year_panel.state_btn_group.button(btn_id).isChecked())
+                year_panel.on_state_btn_toggled(
+                    year_panel.state_btn_group.button(btn_id),
+                    shift_override=True
+                )
+        
+        
+
+
 
     
 

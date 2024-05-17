@@ -1,9 +1,9 @@
 import sys, os
-from PyQt5.QtWidgets import QWidget, QButtonGroup, QAbstractButton, QStyle
+from PyQt5.QtWidgets import QWidget, QButtonGroup, QAbstractButton, QStyle, QApplication
+
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QPixmap, QIcon
-
 class YearPanel(QWidget):
     def __init__(self, year_panel_controller, year_panel_model):    
         super().__init__()
@@ -113,23 +113,30 @@ class YearPanel(QWidget):
 
     
     @pyqtSlot(QAbstractButton)
-    def on_state_btn_toggled(self, btn):
+    def on_state_btn_toggled(self, btn, shift_override=False):
         """Updates the state of the slab based on the button clicked. Ensures
         that only two buttons can be checked at a time. If two buttons are 
         selected, the secondary state is marked accordingly with a circle.
-
+                    
         Args:
             btn (QPushButton): button clicked by the user
             checked (bool): whether the button is checked (True) or unchecked
         """
-        checked_btns = [btn for btn in self.state_btn_group.buttons() 
-                        if btn.isChecked()]
-        
+        # TODO: implement safety measure to not check disabled panels
+        modifiers = QApplication.keyboardModifiers()  
+        if modifiers == Qt.ShiftModifier and not shift_override:
+            return
+
+        checked_btns = [button for button in self.state_btn_group.buttons() 
+                        if button.isChecked()]
+
         if len(checked_btns) > 2:
             btn.setChecked(False)
             checked_btns.remove(btn)
-        elif len(checked_btns) == 2 and btn.isChecked:
+        elif len(checked_btns) == 2 and btn.isChecked():
             btn.setIcon(self.secondary_icon)
+        elif len(checked_btns) == 2 and not btn.isChecked():
+            btn.setIcon(QIcon())
         elif len(checked_btns) == 1:
             btn.setIcon(QIcon())
             checked_btns[0].setIcon(QIcon())

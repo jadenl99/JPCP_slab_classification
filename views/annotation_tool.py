@@ -23,6 +23,7 @@ class AnnotationTool(QMainWindow):
         loadUi('resources/mainapp.ui', self)
         self.setWindowTitle('JPCP Annotation Tool')
         years_layout = QHBoxLayout()
+        years_layout.setSpacing(0)
         sorted_year_panels = sorted(year_panels.items())
         for panel in sorted_year_panels:
             years_layout.addWidget(panel[1])

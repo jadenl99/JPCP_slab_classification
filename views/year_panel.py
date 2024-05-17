@@ -76,7 +76,9 @@ class YearPanel(QWidget):
         """
         self.back_btn.setEnabled(not lock)  
         self.next_btn.setEnabled(not lock)
-
+        self.faulting_lbl.setText('Average Faulting: N/A')
+        self.length_lbl.setText('Length: N/A')
+        self.width_lbl.setText('Width: N/A')
 
         for btn in self.state_btn_group.buttons():
             if lock:
@@ -132,13 +134,18 @@ class YearPanel(QWidget):
 
     @pyqtSlot(tuple)
     def on_state_menu_changed(self, state_tuple):
-        """Updates the state of the slab based on the state tuple provided
+        """Updates the state of the slab based on the state tuple provided and 
+        also updates slab information such as length, width, and average
+        faulting.
 
         Args:
-            state_tuple (tuple[str, str, str]): tuple containing the primary
-            state, secondary state, and special state of the slab
+            state_tuple (tuple[str, str, str, float, float, float]): tuple 
+            containing the primary state, secondary state, special state, 
+            length, width, and averaget faulting of the slab
         """
-        primary_state, secondary_state, special_state = state_tuple
+        primary_state, secondary_state, special_state, length, width, \
+        avg_faulting = state_tuple
+
         for btn in self.state_btn_group.buttons():
             btn.setIcon(QIcon())
             if primary_state and btn.text() == primary_state:
@@ -157,6 +164,13 @@ class YearPanel(QWidget):
             self.replaced_box.setChecked(False)
         
         
+        faulting_txt = f'Average Faulting: {avg_faulting:.2f}' if avg_faulting \
+            else 'Average Faulting: N/A'
+        length_txt = f'Length: {length:.2f} ft.' if length else 'Length: N/A'
+        width_txt = f'Width: {width:.2f} ft.' if width else 'Width: N/A'
+        self.length_lbl.setText(length_txt)
+        self.width_lbl.setText(width_txt)
+        self.faulting_lbl.setText(faulting_txt)
 
 
 

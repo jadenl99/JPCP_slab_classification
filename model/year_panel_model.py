@@ -32,7 +32,7 @@ class LockPanelSignal(QObject):
 class SlabStateSignal(QObject):
     """Signal class for sending changes to the YearPanelView to update the 
     state of the slab. Will be in the form (primary_state, secondary_state, 
-    special_state)
+    special_state, length, width, mean_faulting)
     """
     state_changed = pyqtSignal(tuple)
 
@@ -64,6 +64,7 @@ class YearPanelModel(QObject):
         self._primary_states = None
         self._secondary_states = None
         self._special_states = None
+        self._slabs_info = None
 
 
     @property
@@ -117,14 +118,26 @@ class YearPanelModel(QObject):
         self._primary_states = []
         self._secondary_states = []
         self._special_states = []
+        self._slabs_info = {
+            'length' : [],
+            'width' : [],
+            'mean_faulting': []
+        }
         for slab_id in self._slab_id_list:
             slab_data = self._slab_inventory.fetch_slab(self._year, slab_id)
             self._primary_states.append(slab_data['primary_state'])
             self._secondary_states.append(slab_data['secondary_state'])
             self._special_states.append(slab_data['special_state'])
+            self._slabs_info['length'].append(slab_data['length'] / 304.8)
+            self._slabs_info['width'].append(slab_data['width'] / 304.8)
+            self._slabs_info['mean_faulting'].append(slab_data['mean_faulting'])
+
         state_tuple = (self._primary_states[0], 
                        self._secondary_states[0],
-                       self._special_states[0])
+                       self._special_states[0],
+                       self._slabs_info['length'][0],
+                       self._slabs_info['width'][0],
+                       self._slabs_info['mean_faulting'][0])
         
 
         self.image_signal.image_changed.emit(self._img_directory)
@@ -210,7 +223,10 @@ class YearPanelModel(QObject):
         if next_slab_list_index is not None:
             state_tuple = (self._primary_states[next_slab_list_index], 
                            self._secondary_states[next_slab_list_index],
-                           self._special_states[next_slab_list_index])
+                           self._special_states[next_slab_list_index],
+                           self._slabs_info['length'][next_slab_list_index],
+                           self._slabs_info['width'][next_slab_list_index],
+                           self._slabs_info['mean_faulting'][next_slab_list_index])
             self.state_changed_signal.state_changed.emit(state_tuple)
            
 

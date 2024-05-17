@@ -54,6 +54,7 @@ class YearPanelModel(QObject):
         self.next_btn_enable_signal = NextButtonEnableSignal()
         self.back_btn_enable_signal = BackButtonEnableSignal()
         self.state_changed_signal = SlabStateSignal()   
+        self._panel_updated = False
         self._year = year
         self._slab_inventory = slab_inventory
         self._slab_id_list = None
@@ -65,6 +66,16 @@ class YearPanelModel(QObject):
         self._secondary_states = None
         self._special_states = None
         self._slabs_info = None
+
+
+    @property
+    def panel_updated(self):
+        return self._panel_updated
+    
+
+    @panel_updated.setter
+    def panel_updated(self, panel_updated):
+        self._panel_updated = panel_updated
 
 
     @property
@@ -81,6 +92,21 @@ class YearPanelModel(QObject):
     @property
     def lock_panel(self):
         return self._lock_panel 
+    
+
+    @property
+    def primary_states(self):
+        return self._primary_states
+    
+
+    @property
+    def secondary_states(self):
+        return self._secondary_states
+
+
+    @property
+    def slab_id_list_index(self):
+        return self._slab_id_list_index
     
 
     def update_curr_imgs(self, base_dir, img_type, slab_id_list):
@@ -183,9 +209,8 @@ class YearPanelModel(QObject):
             self.next_btn_enable_signal.next_btn_enable.emit(False)
         if self._slab_id_list_index > 0:
             self.back_btn_enable_signal.back_btn_enable.emit(True)
+        self.change_CY_slab(self._slab_id_list_index)
 
-        self.update_state_of_slab(self._slab_id_list_index - 1, 
-                                  self._slab_id_list_index)
 
     def previous_slab(self):
         """If the CY has more than one slab associated with the BY slab, goes
@@ -202,24 +227,22 @@ class YearPanelModel(QObject):
         if self._slab_id_list_index < len(self._slab_id_list) - 1:
             self.next_btn_enable_signal.next_btn_enable.emit(True)
         
-        self.update_state_of_slab(self._slab_id_list_index + 1, 
-                                  self._slab_id_list_index)
+        self.change_CY_slab(self._slab_id_list_index)
     
     
-    def update_state_of_slab(self, curr_slab_list_index, 
-                             next_slab_list_index: int=None):
+    def change_CY_slab(self, next_slab_list_index):
         """Updates state information about the current slab id. 
 
         Args:
             curr_slab_list_index (int): where in the slab list to index to get
             the CY slab index, so the CY slab can be updated with its annotated
             states
-            next_slab_list_index (int, optional): where in the slab list to
+            next_slab_list_index (int): where in the slab list to
             index to get the next CY slab index of interest, so the appropriate
-            fields can be set to the next CY slab states. Defaults to None.
+            fields can be set to the next CY slab states. 
         """
         # TODO: logic to store the state of leaving slab
-
+        
         if next_slab_list_index is not None:
             state_tuple = (self._primary_states[next_slab_list_index], 
                            self._secondary_states[next_slab_list_index],
@@ -228,5 +251,21 @@ class YearPanelModel(QObject):
                            self._slabs_info['width'][next_slab_list_index],
                            self._slabs_info['mean_faulting'][next_slab_list_index])
             self.state_changed_signal.state_changed.emit(state_tuple)
+    
+
+    def push_updates_to_db(self):
+        """Sends a request to the database to update a certain slab. 
+        """
+        if self._panel_updated and not self._lock_panel:
+            for i in range(len(self._slab_id_list)):
+                self._slab_inventory.add_slab_update_request(
+                    self._year, self._slab_id_list[i],
+                    {
+                        'primary_state': self._primary_states[i],
+                        'secondary_state': self._secondary_states[i],
+                        'special_state': self._special_states[i]
+                    }
+                )
+            
            
 

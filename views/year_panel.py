@@ -9,6 +9,9 @@ class YearPanel(QWidget):
         super().__init__()
         self._year_panel_controller = year_panel_controller
         self._year_panel_model = year_panel_model
+        self.secondary_icon = self.style().standardIcon(
+            QStyle.SP_DialogYesButton
+            ) 
         loadUi('resources/year_panel.ui', self)
 
         # Set up buttons so slab states can be annotated
@@ -46,7 +49,7 @@ class YearPanel(QWidget):
 
         self.next_btn.clicked.connect(self._year_panel_controller.next_slab)
         self.back_btn.clicked.connect(self._year_panel_controller.prev_slab)
-        self.state_btn_group.buttonToggled.connect(
+        self.state_btn_group.buttonClicked.connect(
             self.on_state_btn_toggled
         )
         self.yr_label.clicked.connect(
@@ -109,8 +112,8 @@ class YearPanel(QWidget):
         self.back_btn.setEnabled(enable)
 
     
-    @pyqtSlot(QAbstractButton, bool)
-    def on_state_btn_toggled(self, btn, checked):
+    @pyqtSlot(QAbstractButton)
+    def on_state_btn_toggled(self, btn):
         """Updates the state of the slab based on the button clicked. Ensures
         that only two buttons can be checked at a time. If two buttons are 
         selected, the secondary state is marked accordingly with a circle.
@@ -124,12 +127,20 @@ class YearPanel(QWidget):
         
         if len(checked_btns) > 2:
             btn.setChecked(False)
-        elif len(checked_btns) == 2 and checked:
-            btn.setIcon(self.style().standardIcon(QStyle.SP_DialogYesButton))
+            checked_btns.remove(btn)
+        elif len(checked_btns) == 2 and btn.isChecked:
+            btn.setIcon(self.secondary_icon)
         elif len(checked_btns) == 1:
-            if not checked:
-                btn.setIcon(QIcon())
+            btn.setIcon(QIcon())
             checked_btns[0].setIcon(QIcon())
+        
+        
+        # Ensure that the primary state is always the first button checked
+        if (len(checked_btns) == 2 and 
+            checked_btns[0].icon().cacheKey() == self.secondary_icon.cacheKey()):
+            checked_btns[0], checked_btns[1] = checked_btns[1], checked_btns[0]
+
+        self._year_panel_controller.change_slab_state_info(checked_btns)
         
 
     @pyqtSlot(tuple)
@@ -152,9 +163,7 @@ class YearPanel(QWidget):
                 btn.setChecked(True)
             elif secondary_state and btn.text() == secondary_state:
                 btn.setChecked(True)
-                btn.setIcon(self.style().standardIcon(
-                    QStyle.SP_DialogYesButton)
-                    )
+                btn.setIcon(self.secondary_icon)
             else:
                 btn.setChecked(False)
             

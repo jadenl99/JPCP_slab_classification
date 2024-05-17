@@ -20,6 +20,7 @@ class YearPanelController(QObject):
         """
         self._year_panel_model.previous_slab()  
 
+
     @pyqtSlot(bool)
     def popup_original_image(self):
         """Opens a dialog box to display the original image of the slab
@@ -30,6 +31,33 @@ class YearPanelController(QObject):
         except:
             pass
 
+    
+    @pyqtSlot(list)
+    def change_slab_state_info(self, buttons_pressed):
+        """Changes the state of the slab based on the button pressed by the user
+        in the model
+
+        Args:
+            buttons_pressed (list[QPushButton]): list of buttons pressed by the
+            user, denoting the primary and secondary states of the slab
+        """
+        primary_state_list = self._year_panel_model.primary_states
+        secondary_state_list = self._year_panel_model.secondary_states
+        slab_index = self._year_panel_model.slab_id_list_index
+
+        try:
+            btn = buttons_pressed[0]
+            primary_state_list[slab_index] = btn.text()
+        except:
+            primary_state_list[slab_index] = None
+        try:
+            btn = buttons_pressed[1]
+            secondary_state_list[slab_index] = btn.text()
+        except:
+            secondary_state_list[slab_index] = None
+        
+        self._year_panel_model.panel_updated = True
+        
 
 
 

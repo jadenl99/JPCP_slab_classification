@@ -57,8 +57,9 @@ class SlabInventory():
         """Executes all the requests in the requests list and clears all the
         requests after.
         """
-        self.slab_collection.bulk_write(self.requests)
-        self.requests = []  
+        if self.requests:
+            self.slab_collection.bulk_write(self.requests)
+            self.requests = []  
     
 
     def add_slab_update_request(self, year, slab_index, update_data):
@@ -76,7 +77,7 @@ class SlabInventory():
                 {"slab_index": slab_index, "seg_year_id": seg_yr_id},
                 {"$set": update_data}
                 )
-            )
+            ) 
         
     
     def fetch_slab(self, year, slab_index):

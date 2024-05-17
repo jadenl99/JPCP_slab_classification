@@ -46,21 +46,26 @@ class ToolController(QObject):
 
     def update_year_slabs(self, by_slab_id):
         """Updates the displayed slabs in the annotation tool main window based
-        on the year selected by the user
+        on the year specified
 
         Args:
-            by_slab_id (int): base year slab ID to update slabs to
+            by_slab_id (int): base year slab ID to update associating CY slabs 
+            to
         """
         img_type = self._tool_model.image_type.value
         reg_data = self._tool_model.reg_data
         first_BY_index = self._tool_model.first_BY_index    
         for year, panel_model in self._tool_model.year_panel_models.items():
+            panel_model.push_updates_to_db()
+            panel_model.panel_updated = False
             try:
                 year_img_list = reg_data[by_slab_id - first_BY_index][str(year)]  
             except:
                 year_img_list = None
             panel_model.update_curr_imgs(self._tool_model.directory, img_type,
                                          year_img_list)
+            
+        self._tool_model.execute_updates()
             
 
     @pyqtSlot(str)

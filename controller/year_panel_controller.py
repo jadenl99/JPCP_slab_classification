@@ -33,29 +33,22 @@ class YearPanelController(QObject):
 
     
     @pyqtSlot(list)
-    def change_slab_state_info(self, buttons_pressed):
+    def change_slab_state_info(self, states_pressed):
         """Changes the state of the slab based on the button pressed by the user
         in the model
 
         Args:
-            buttons_pressed (list[QPushButton]): list of buttons pressed by the
-            user, denoting the primary and secondary states of the slab
+            states_pressed (list[str]): list of states pressed by the
+            user, denoting the primary and secondary states of the slab. 
+            list[0] is the primary state and list[1] is the secondary state.
         """
         primary_state_list = self._year_panel_model.primary_states
         secondary_state_list = self._year_panel_model.secondary_states
         slab_index = self._year_panel_model.slab_id_list_index
 
-        try:
-            btn = buttons_pressed[0]
-            primary_state_list[slab_index] = btn.text()
-        except:
-            primary_state_list[slab_index] = None
-        try:
-            btn = buttons_pressed[1]
-            secondary_state_list[slab_index] = btn.text()
-        except:
-            secondary_state_list[slab_index] = None
         
+        primary_state_list[slab_index] = states_pressed[0]
+        secondary_state_list[slab_index] = states_pressed[1]
         self._year_panel_model.panel_updated = True
         
 

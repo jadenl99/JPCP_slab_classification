@@ -62,8 +62,31 @@ class ToolController(QObject):
                 year_img_list = reg_data[by_slab_id - first_BY_index][str(year)]  
             except:
                 year_img_list = None
-            panel_model.update_curr_imgs(self._tool_model.directory, img_type,
-                                         year_img_list)
+            if year_img_list is None or len(year_img_list) == 0:
+                panel_model.img_directory = ''
+                panel_model.lock_panel = True
+            else:
+                if panel_model.lock_panel:
+                    panel_model.lock_panel = False
+                panel_model.slab_id_list_index = 0
+                panel_model.slab_id_list = year_img_list    
+                panel_model.base_img_directory = (
+                    f'{self._tool_model.directory}/{year}/Slabs/{img_type}'
+                )
+                panel_model.img_directory = (
+                    f'{panel_model.base_img_directory}/{year_img_list[0]}.jpg'
+                )
+
+                # set states for each CY slab
+                panel_model.primary_states = []
+                panel_model.secondary_states = []
+                panel_model.special_states = []
+                panel_model.slabs_info = {
+                    'length' : [],
+                    'width' : [],
+                    'mean_faulting': []
+                }
+                panel_model.populate_slab_info()
             
         self._tool_model.execute_updates()
             

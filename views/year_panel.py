@@ -49,9 +49,7 @@ class YearPanel(QWidget):
 
         self.next_btn.clicked.connect(self._year_panel_controller.next_slab)
         self.back_btn.clicked.connect(self._year_panel_controller.prev_slab)
-        self.state_btn_group.buttonClicked.connect(
-            self.on_state_btn_toggled
-        )
+        
         self.yr_label.clicked.connect(
             self._year_panel_controller.popup_original_image
         )
@@ -110,44 +108,6 @@ class YearPanel(QWidget):
             enabled. Else, sets the back button to be disabled.
         """
         self.back_btn.setEnabled(enable)
-
-    
-    @pyqtSlot(QAbstractButton)
-    def on_state_btn_toggled(self, btn, shift_override=False):
-        """Updates the state of the slab based on the button clicked. Ensures
-        that only two buttons can be checked at a time. If two buttons are 
-        selected, the secondary state is marked accordingly with a circle.
-                    
-        Args:
-            btn (QPushButton): button clicked by the user
-            checked (bool): whether the button is checked (True) or unchecked
-        """
-        # TODO: implement safety measure to not check disabled panels
-        modifiers = QApplication.keyboardModifiers()  
-        if modifiers == Qt.ShiftModifier and not shift_override:
-            return
-
-        checked_btns = [button for button in self.state_btn_group.buttons() 
-                        if button.isChecked()]
-
-        if len(checked_btns) > 2:
-            btn.setChecked(False)
-            checked_btns.remove(btn)
-        elif len(checked_btns) == 2 and btn.isChecked():
-            btn.setIcon(self.secondary_icon)
-        elif len(checked_btns) == 2 and not btn.isChecked():
-            btn.setIcon(QIcon())
-        elif len(checked_btns) == 1:
-            btn.setIcon(QIcon())
-            checked_btns[0].setIcon(QIcon())
-        
-        
-        # Ensure that the primary state is always the first button checked
-        if (len(checked_btns) == 2 and 
-            checked_btns[0].icon().cacheKey() == self.secondary_icon.cacheKey()):
-            checked_btns[0], checked_btns[1] = checked_btns[1], checked_btns[0]
-
-        self._year_panel_controller.change_slab_state_info(checked_btns)
         
 
     @pyqtSlot(tuple)

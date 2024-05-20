@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QHBoxLayout, 
-                             QAbstractButton, QStyle)
+                             QAbstractButton, QStyle, QWidget)
 from PyQt5.QtGui import QIntValidator, QIcon
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
@@ -34,6 +34,9 @@ class AnnotationTool(QMainWindow):
             panel[1].state_btn_group.buttonClicked.connect(
                 self.on_state_changed
                 )
+            panel[1].replaced_box.clicked.connect(
+                lambda: self.on_replaced_changed()
+            )
             years_layout.addWidget(panel[1])
         self.scroll_year_contents.setLayout(years_layout)
         
@@ -56,7 +59,15 @@ class AnnotationTool(QMainWindow):
                 str(int(self.slab_form.text()) + 1),
                 self.slab_form)
         )
-
+        
+        # replaced year and type setup
+        self._tool_model.replaced_year_changed.connect(
+            self.on_replaced_year_changed
+        )
+        self._tool_model.replaced_type_changed.connect( 
+            self.on_alignment_changed
+        )
+        
         # menu bar actions
         self.action_range.triggered.connect(
             lambda: self._tool_controller.update_image_type('output_range')
@@ -112,7 +123,9 @@ class AnnotationTool(QMainWindow):
         pressed_state = None
         for year, year_panel in sorted_year_panels:
             if year == pressed_yr or (year > pressed_yr 
-                                      and modifiers == QtCore.Qt.ShiftModifier):
+                                      and modifiers == QtCore.Qt.ShiftModifier
+                                      and not 
+                                      year_panel._year_panel_model.lock_panel):
                 curr_btn_group = year_panel.state_btn_group
                 curr_btn = curr_btn_group.button(btn_id)
                 if year > pressed_yr:
@@ -120,12 +133,46 @@ class AnnotationTool(QMainWindow):
                 
                 # enforce only buttons checked at a time
                 checked_states = self.button_selection(curr_btn_group, curr_btn)
+
+                # change borders based if there is any checked button
+                if checked_states[0] is None:
+                    year_panel.slab_img.setStyleSheet('border: 3px solid red;')
+                else:
+                    year_panel.slab_img.setStyleSheet('border: 3px solid green;')
+
                 # send to controller
                 year_panel._year_panel_controller.change_slab_state_info(
                     checked_states
                     )
                 if year == pressed_yr:
                     pressed_state = curr_btn.isChecked()
+        
+
+    @pyqtSlot(bool)
+    def on_replaced_changed(self):
+        checkbox = self.sender()
+        modifer = QApplication.keyboardModifiers()
+        sorted_year_panels = sorted(self._year_panels.items())
+        pressed_yr = None
+        for year, year_panel in sorted_year_panels:
+            if year_panel.replaced_box == checkbox:
+                
+                pressed_yr = year
+                break
+        
+        
+        is_checked = checkbox.isChecked()
+        for year, year_panel in sorted_year_panels:
+            if year == pressed_yr or (year > pressed_yr 
+                                      and modifer == QtCore.Qt.ShiftModifier
+                                      and not 
+                                      year_panel._year_panel_model.lock_panel):
+                year_panel.replaced_box.setChecked(is_checked)  
+                year_panel._year_panel_controller.change_replaced_info(
+                    is_checked
+                )
+                
+
 
     
     def button_selection(self, btn_group, curr_btn):
@@ -167,6 +214,7 @@ class AnnotationTool(QMainWindow):
             checked_btns[0], checked_btns[1] = checked_btns[1], checked_btns[0]
 
         checked_btns = [button.text() for button in checked_btns]
+
         # append None if there are less than 2 buttons checked
         if len(checked_btns) < 2:
             checked_btns.append(None)
@@ -174,17 +222,33 @@ class AnnotationTool(QMainWindow):
             checked_btns.append(None)
 
         return checked_btns
-        
-        
-        
-
-        
-        
-        
 
 
+    @pyqtSlot(int)
+    def on_replaced_year_changed(self, year):
+        """Slot for when the detected replacent year is changed.
 
+        Args:
+            year (int): year a replacement was detected
+        """
+        
+        if year < 50000:
+            self.replaced_yr_lbl.setText(f'Replaced Year: {year}')  
+            self.replaced_yr_lbl.setStyleSheet('border: 3px solid red;')
+            self.align_lbl.setStyleSheet('border: 3px solid red;')
+        else:
+            self.replaced_yr_lbl.setText('Replaced Year: N/A')
+            self.replaced_yr_lbl.setStyleSheet('')
+            self.align_lbl.setStyleSheet('')
+        
+
+    @pyqtSlot(str)
+    def on_alignment_changed(self, alignment):
+        """Slot for when the alignment is changed.
+
+        Args:
+            alignment (str): alignment of the slab
+        """
+        
+        self.align_lbl.setText(f'Misalignment Type: {alignment}')
     
-
-
-

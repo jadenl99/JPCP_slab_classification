@@ -6,6 +6,8 @@ class ImageType(Enum):
     INTENSITY = 'output_intensity'
 
 class ToolModel(QObject):
+    replaced_year_changed = pyqtSignal(int)
+    replaced_type_changed = pyqtSignal(str)
     def __init__(self, year_panel_models, base_year, slab_inventory, directory):
         """Constructor for ToolModel, containing data for the annotation tool 
         main window
@@ -28,6 +30,31 @@ class ToolModel(QObject):
         self._first_BY_index = self._reg_data[0]['base_id']
         self._last_BY_index = self._reg_data[-1]['base_id'] 
         self._current_BY_index = self._first_BY_index
+        self._replaced_year = self._reg_data[0]['replaced']
+        self._replaced_type = self._reg_data[0]['replaced_type']
+
+
+    @property
+    def replaced_year(self):
+        return self._replaced_year
+    
+
+    @replaced_year.setter
+    def replaced_year(self, replaced_year):
+        self._replaced_year = replaced_year
+        self.replaced_year_changed.emit(replaced_year)
+
+
+    
+    @property
+    def replaced_type(self):
+        return self._replaced_type
+    
+
+    @replaced_type.setter
+    def replaced_type(self, replaced_type):
+        self._replaced_type = replaced_type
+        self.replaced_type_changed.emit(replaced_type)
 
 
     @property

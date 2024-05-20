@@ -13,7 +13,6 @@ class YearPanel(QWidget):
             QStyle.SP_DialogYesButton
             ) 
         loadUi('resources/year_panel.ui', self)
-
         # Set up buttons so slab states can be annotated
         self.state_btn_group = QButtonGroup()   
         self.state_btn_group.setExclusive(False)
@@ -45,10 +44,13 @@ class YearPanel(QWidget):
         self._year_panel_model.state_changed_signal.state_changed.connect(
             self.on_state_menu_changed
         )
-
-
-        self.next_btn.clicked.connect(self._year_panel_controller.next_slab)
-        self.back_btn.clicked.connect(self._year_panel_controller.prev_slab)
+        
+        self.next_btn.clicked.connect(
+            lambda: self._year_panel_controller.increment_slab(next=True)
+        )
+        self.back_btn.clicked.connect(
+            lambda: self._year_panel_controller.increment_slab(next=False)
+        )
         
         self.yr_label.clicked.connect(
             self._year_panel_controller.popup_original_image
@@ -62,7 +64,7 @@ class YearPanel(QWidget):
         elif not os.path.exists(slab_dir):
             self.slab_img.setText("Slab Image Not Found")
         else:
-            img = QPixmap(slab_dir).scaled(250, 500, 1, 0)
+            img = QPixmap(slab_dir).scaled(330, 600, 1, 0)
             self.slab_img.setPixmap(img)
 
     
@@ -77,9 +79,11 @@ class YearPanel(QWidget):
         """
         self.back_btn.setEnabled(not lock)  
         self.next_btn.setEnabled(not lock)
+        self.replaced_box.setEnabled(not lock)  
         self.faulting_lbl.setText('Average Faulting: N/A')
         self.length_lbl.setText('Length: N/A')
         self.width_lbl.setText('Width: N/A')
+        self.cy_index_lbl.setText('CY Index: N/A')  
 
         for btn in self.state_btn_group.buttons():
             if lock:
@@ -117,12 +121,12 @@ class YearPanel(QWidget):
         faulting.
 
         Args:
-            state_tuple (tuple[str, str, str, float, float, float]): tuple 
+            state_tuple (tuple[str, str, str, float, float, float, int]): tuple 
             containing the primary state, secondary state, special state, 
-            length, width, and averaget faulting of the slab
+            length, width, average faulting of slab, and CY index
         """
         primary_state, secondary_state, special_state, length, width, \
-        avg_faulting = state_tuple
+        avg_faulting, cy_index = state_tuple
 
         for btn in self.state_btn_group.buttons():
             btn.setIcon(QIcon())
@@ -144,9 +148,12 @@ class YearPanel(QWidget):
             else 'Average Faulting: N/A'
         length_txt = f'Length: {length:.2f} ft.' if length else 'Length: N/A'
         width_txt = f'Width: {width:.2f} ft.' if width else 'Width: N/A'
+
+        if primary_state is None:
+            self.slab_img.setStyleSheet('border: 3px solid red;')
+        else:
+            self.slab_img.setStyleSheet('border: 3px solid green;')
         self.length_lbl.setText(length_txt)
         self.width_lbl.setText(width_txt)
         self.faulting_lbl.setText(faulting_txt)
-
-
-
+        self.cy_index_lbl.setText(f'CY Index: {cy_index}')   

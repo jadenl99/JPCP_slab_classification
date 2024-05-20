@@ -192,96 +192,32 @@ class YearPanelModel(QObject):
             self._slabs_info['width'].append(slab_data['width'] / 304.8)
             self._slabs_info['mean_faulting'].append(slab_data['mean_faulting'])
 
-        state_tuple = (
-            self._primary_states[0], 
-            self._secondary_states[0],
-            self._special_states[0],
-            self._slabs_info['length'][0],
-            self._slabs_info['width'][0],
-            self._slabs_info['mean_faulting'][0]
-        )
-
+        self.refresh_CY_slab_info()
+    
+    
+    def refresh_CY_slab_info(self):
+        """Updates state information about the current slab id.  
+        """
+        slab_id = self._slab_id_list_index
+        state_tuple = (self._primary_states[slab_id], 
+                        self._secondary_states[slab_id],
+                        self._special_states[slab_id],
+                        self._slabs_info['length'][slab_id],
+                        self._slabs_info['width'][slab_id],
+                        self._slabs_info['mean_faulting'][slab_id],
+                        self._slab_id_list[slab_id])
         self.state_changed_signal.state_changed.emit(state_tuple)
-        # set the enable of the back and next buttons accordingly
-        self.back_btn_enable_signal.back_btn_enable.emit(False)
-        if len(self._slab_id_list) == 1:
-            self.next_btn_enable_signal.next_btn_enable.emit(False)
-        else:
-            self.next_btn_enable_signal.next_btn_enable.emit(True)
 
-
-    def change_image_type(self, img_type):
-        """Updates base and current directory based off the image type selected
-
-        Args:
-            img_type (str): type of images to show
-        """
-        if self._lock_panel:
-            return
-        
-        last_slash_index = self._base_img_directory.rfind('/')
-        self._base_img_directory = (self._base_img_directory[:last_slash_index]
-                                   + f'/{img_type}')
-        self._img_directory = (f'{self._base_img_directory}/'
-                               f'{self._slab_id_list[self._slab_id_list_index]}'
-                               f'.jpg')
-        self.image_signal.image_changed.emit(self._img_directory)
-
-
-    def next_slab(self):
-        """If the CY has more than one slab associated with the BY slab, goes
-        to next CY slab in the list
-        """
-        self._slab_id_list_index += 1
-        self._img_directory = (f'{self._base_img_directory}/'
-                               f'{self._slab_id_list[self._slab_id_list_index]}'
-                               f'.jpg')
-        self.image_signal.image_changed.emit(self._img_directory)
-
-        if self._slab_id_list_index == len(self._slab_id_list) - 1:
-            self.next_btn_enable_signal.next_btn_enable.emit(False)
-        if self._slab_id_list_index > 0:
-            self.back_btn_enable_signal.back_btn_enable.emit(True)
-        self.change_CY_slab(self._slab_id_list_index)
-
-
-    def previous_slab(self):
-        """If the CY has more than one slab associated with the BY slab, goes
-        to previous CY slab in the list
-        """
-        self._slab_id_list_index -= 1
-        self._img_directory = (f'{self._base_img_directory}/'
-                               f'{self._slab_id_list[self._slab_id_list_index]}'
-                               f'.jpg')
-        self.image_signal.image_changed.emit(self._img_directory)
-
+        # update the back and next buttons
         if self._slab_id_list_index == 0:
             self.back_btn_enable_signal.back_btn_enable.emit(False)
+        else:
+            self.back_btn_enable_signal.back_btn_enable.emit(True)
         if self._slab_id_list_index < len(self._slab_id_list) - 1:
             self.next_btn_enable_signal.next_btn_enable.emit(True)
+        else:
+            self.next_btn_enable_signal.next_btn_enable.emit(False)
         
-        self.change_CY_slab(self._slab_id_list_index)
-    
-    
-    def change_CY_slab(self, next_slab_list_index):
-        """Updates state information about the current slab id. 
-
-        Args:
-            next_slab_list_index (int): where in the slab list to
-            index to get the next CY slab index of interest, so the appropriate
-            fields can be set to the next CY slab states. 
-        """
-        # TODO: logic to store the state of leaving slab
-        
-        if next_slab_list_index is not None:
-            state_tuple = (self._primary_states[next_slab_list_index], 
-                           self._secondary_states[next_slab_list_index],
-                           self._special_states[next_slab_list_index],
-                           self._slabs_info['length'][next_slab_list_index],
-                           self._slabs_info['width'][next_slab_list_index],
-                           self._slabs_info['mean_faulting'][next_slab_list_index])
-            self.state_changed_signal.state_changed.emit(state_tuple)
-    
 
     def push_updates_to_db(self):
         """Sends a request to the database to update a certain slab. 
@@ -296,6 +232,7 @@ class YearPanelModel(QObject):
                         'special_state': self._special_states[i]
                     }
                 )
+                
             
            
 

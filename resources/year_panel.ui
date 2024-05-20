@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>757</width>
-    <height>885</height>
+    <width>753</width>
+    <height>876</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,6 +18,11 @@
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+	border-color:rgb(255, 99, 21) 10px
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -49,10 +54,16 @@
      </item>
      <item>
       <widget class="QWidget" name="widget" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="maximumSize">
         <size>
          <width>330</width>
-         <height>500</height>
+         <height>600</height>
         </size>
        </property>
        <property name="layoutDirection">
@@ -526,6 +537,16 @@ QToolButton:enabled:hover {
          <widget class="QLabel" name="faulting_lbl">
           <property name="text">
            <string>Average Faulting:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="cy_index_lbl">
+          <property name="text">
+           <string>CY Slab Index:</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>953</width>
-    <height>826</height>
+    <width>949</width>
+    <height>817</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,8 +25,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>929</width>
-         <height>751</height>
+         <width>925</width>
+         <height>742</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -40,8 +40,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>905</width>
-             <height>627</height>
+             <width>901</width>
+             <height>610</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -51,6 +51,38 @@
             </sizepolicy>
            </property>
           </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="replaced_yr_lbl">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>First Replacement Detected: None</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="align_lbl">
+             <property name="text">
+              <string>Misalignment Type: None</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
@@ -81,6 +113,9 @@ border-style : inset;
             </property>
             <property name="text">
              <string>&lt;--</string>
+            </property>
+            <property name="shortcut">
+             <string>Alt+Left</string>
             </property>
            </widget>
           </item>
@@ -180,37 +215,8 @@ border-style : inset;
             <property name="text">
              <string>--&gt;</string>
             </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="save_layout">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetDefaultConstraint</enum>
-          </property>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="save_btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="text">
-             <string>Save</string>
-            </property>
-            <property name="flat">
-             <bool>false</bool>
+            <property name="shortcut">
+             <string>Alt+Right</string>
             </property>
            </widget>
           </item>
@@ -228,7 +234,7 @@ border-style : inset;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>953</width>
+     <width>949</width>
      <height>26</height>
     </rect>
    </property>

@@ -45,27 +45,70 @@ class ToolController(QObject):
     
 
     def update_year_slabs(self, by_slab_id):
-        """Updates the displayed slabs in the annotation tool main window based
-        on the year selected by the user
+        """Updates the displayed slabs in the annotation tool main window. 
+        Also sends signals to update the database with changes made to the 
+        existing slabs corresponding with the existing base year. Panels are 
+        deactivated if no slabs are found for the particular year.
 
         Args:
-            by_slab_id (int): base year slab ID to update slabs to
+            by_slab_id (int): base year slab ID to update associating CY slabs 
+            to
         """
         img_type = self._tool_model.image_type.value
         reg_data = self._tool_model.reg_data
         first_BY_index = self._tool_model.first_BY_index    
         for year, panel_model in self._tool_model.year_panel_models.items():
+            if panel_model.panel_updated:
+                panel_model.push_updates_to_db()
+                panel_model.panel_updated = False
+
+            # fetch slab state information for CY slabs
             try:
                 year_img_list = reg_data[by_slab_id - first_BY_index][str(year)]  
             except:
                 year_img_list = None
-            panel_model.update_curr_imgs(self._tool_model.directory, img_type,
-                                         year_img_list)
+
+            if year_img_list is None or len(year_img_list) == 0:
+                # no slabs for this year, deactivate panel
+                panel_model.img_directory = ''
+                panel_model.lock_panel = True
+            else:
+                # slabs for this year, activate panel   
+                if panel_model.lock_panel:
+                    panel_model.lock_panel = False
+
+                # update index, image path
+                panel_model.slab_id_list_index = 0
+                panel_model.slab_id_list = year_img_list    
+                panel_model.base_img_directory = (
+                    f'{self._tool_model.directory}/{year}/Slabs/{img_type}'
+                )
+                panel_model.img_directory = (
+                    f'{panel_model.base_img_directory}/{year_img_list[0]}.jpg'
+                )
+
+                # set states for each CY slab
+                panel_model.primary_states = []
+                panel_model.secondary_states = []
+                panel_model.special_states = []
+                panel_model.slabs_info = {
+                    'length' : [],
+                    'width' : [],
+                    'mean_faulting': []
+                }
+
+                panel_model.populate_slab_info()
+
+
+        self._tool_model.replaced_year = reg_data[by_slab_id - first_BY_index]['replaced']
+        self._tool_model.replaced_type = reg_data[by_slab_id - first_BY_index]['replaced_type']
+        # database updates   
+        self._tool_model.execute_updates()
             
 
     @pyqtSlot(str)
     def update_image_type(self, img_type):
-        """Updates the image type displayed 
+        """Updates the image type displayed for each year.
 
         Args:
             img_type (str): image type selected by the user
@@ -76,7 +119,17 @@ class ToolController(QObject):
         self._tool_model.set_image_type(img_type)
 
         for panel_model in self._tool_model.year_panel_models.values():
-            panel_model.change_image_type(img_type)
+            if not panel_model.lock_panel:
+                last_slash_index = panel_model.base_img_directory.rfind('/')
+                panel_model.base_img_directory = (
+                    panel_model.base_img_directory[:last_slash_index]
+                    + f'/{img_type}'
+                )
+                index = panel_model.slab_id_list_index
+                panel_model.img_directory = (
+                    f'{panel_model.base_img_directory}/'
+                    f'{panel_model.slab_id_list[index]}.jpg'
+                )
             
 
 

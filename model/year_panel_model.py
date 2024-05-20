@@ -188,8 +188,14 @@ class YearPanelModel(QObject):
             self._primary_states.append(slab_data['primary_state'])
             self._secondary_states.append(slab_data['secondary_state'])
             self._special_states.append(slab_data['special_state'])
-            self._slabs_info['length'].append(slab_data['length'] / 304.8)
-            self._slabs_info['width'].append(slab_data['width'] / 304.8)
+            if slab_data['length'] is None:
+                self._slabs_info['length'].append(None)
+            else:
+                self._slabs_info['length'].append(slab_data['length'] / 304.8)
+            if slab_data['width'] is None:
+                self._slabs_info['width'].append(None)
+            else:
+                self._slabs_info['width'].append(slab_data['width'] / 304.8)
             self._slabs_info['mean_faulting'].append(slab_data['mean_faulting'])
 
         self.refresh_CY_slab_info()

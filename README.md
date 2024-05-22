@@ -26,12 +26,12 @@ The annotation tool takes in all the slab images and the state information from 
 There is no output. Run the slab registration algorithm again to get the spreadsheet with all the slab states.
 
 ## Instructions
-In the root directory, run `python app.py`. A main menu should pop up. When choosing the directory, choose the `<data>` folder (refer to the section on setting up the file system). Then choose a registration to annotate. After submitting the form, if parameters are valid, the main annotation tool will pop up. Progress will save along the way, so the app can safely be closed and reopened again. A save occurs when you navigate to the next/previous slab. After you are done annotating, go back to the slab registration step to produce the final spreadsheet. 
+In the root directory, run `python app.py`. A main menu should pop up. When choosing the directory, choose the `<data>` folder (refer to the section on setting up the file system). Then choose a registration to annotate. After submitting the form, if parameters are valid, the main annotation tool will pop up. Progress will save along the way, so the app can safely be closed and reopened again. A save occurs when you navigate to the next/previous slab. After you are done annotating, go back to the slab registration step to produce the final spreadsheet. To install dependencies, run `pip install -r requirements.txt`.      
 ## Tips 
 There are shortcuts available to toggle Range and Intensity images. Press `CTRL + R` to display Range images, and `CTRL + I` to display the Intensity images. Other shortcuts: 
 * `ALT + ->` to go to the next images
 * `ALT + <-` to go to the previous images 
-* `SHIFT + click on state button` to toggle from that year onward 
+* `SHIFT + click on state button` to toggle from that year onward              
 Also, if the image is too small, hover over the year on the top and click the button to display a pop-up window with the image at its original size. 
 ## Changelog 
 ### [1.0.0] - 2024-05-20

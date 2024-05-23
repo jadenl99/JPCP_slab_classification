@@ -34,5 +34,8 @@ There are shortcuts available to toggle Range and Intensity images. Press `CTRL 
 * `SHIFT + click on state button` to toggle from that year onward              
 Also, if the image is too small, hover over the year on the top and click the button to display a pop-up window with the image at its original size. 
 ## Changelog 
+### [1.0.1] - 2024-05-23
+* Fixes
+  * Replaced year should not show a huge number when no replacement has occured.
 ### [1.0.0] - 2024-05-20
 Initial release.

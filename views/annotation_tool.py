@@ -232,7 +232,7 @@ class AnnotationTool(QMainWindow):
             year (int): year a replacement was detected
         """
         
-        if year < 50000:
+        if 1 <= year <= 3000:
             self.replaced_yr_lbl.setText(f'Replaced Year: {year}')  
             self.replaced_yr_lbl.setStyleSheet('border: 3px solid red;')
             self.align_lbl.setStyleSheet('border: 3px solid red;')
